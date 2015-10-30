@@ -12,6 +12,21 @@ struct index_info{
 	int offset;
 };
 
+struct attrValues
+{
+	string attrName;
+	index_info ii;
+	Union value;
+	int type;	//1：int ，2：char* ， 3：float
+};	/*seletct_attr返回的类*/
+
+struct deleted_node
+{
+	int type;
+	string attrName;
+	Union value; 
+};	/*delete返回的类*/
+
 /*
 	typedef struct AattrNode
 		{
@@ -26,17 +41,36 @@ class recordManager : public bufferManager {
 
 private:
 	string table_name;
+	int count ;
+	vector < vector < deleted_node > >& del_ind；
+	vector <attrValues>& sel_attr;	/*返回值的引用*/
 
 public:
 	recordManager(string t_name):table_name(t_name){
 	}
 	~recordManager();
+	
+	/*bool comp(const index_info &ii_a, const index_info &ii_b){
+		if (ii_a.num != ii_b.num){
+			return ii_a.num < ii_b.num;
+		}
+		else{
+			return ii_a.offset < ii_b.offset;
+		}
+	}
+	bool ii_equal(const index_info &ii_a, const index_info &ii_b){
+		return ii_a.num == ii_b.num && ii_a.offset == ii_b.offset;
+	}
+	void intersect(vector<index_info> &join_ii,vector < vector <index_info> > &vv_ii);
+		/*对向量集合合并排序*/
 
 	int select(int r_length, vector<TreeNode> &v_tn, vector<attrNode> &v_an, vector < vector <index_info> > &vv_ii);
-		/* v_an �ṩ�ñ�����������Ϣ */
+		/* v_an 提供该表所有属性信息 */
 	index_info insert(int r_length, vector<attrAndvalue> &v_aav);
-	vector < vector <attrAndvalue > >& delete_index (int r_length, vector<TreeNode> &v_tn, vector<attrNode> &v_an, vector < vector <index_info> > &vv_ii );
-		/* ���ݲ�ͬ���Է�������aav��list */
+	vector < vector < deleted_node > >& delete_index (int r_length, vector<TreeNode> &v_tn, vector<attrNode> &v_an, vector < vector <index_info> > &vv_ii );
+		/* 根据不同属性返回若干aav的list */
+	vector <attrValues> & select_attr(attrNode attrNode ， int num);
+		/* 返回某个属性的所有值 */
 };
 
 #endif
